@@ -24,6 +24,9 @@ All notable changes to Deskpet are documented here. The project follows
   and graceful local fallback responses.
 - Warm light and dark themes, editable companion settings, transcript export,
   and conversation reset controls.
+- Live-product details including quick-pick names, the pastel corner-companion
+  canvas, ringed pet badge, starter-message treatment, typing status, and a
+  keyboard-friendly 2,000-character composer.
 
 ### Changed
 
