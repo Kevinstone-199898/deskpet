@@ -7,7 +7,6 @@ import {
   Moon,
   RotateCcw,
   Send,
-  Settings,
   Sun,
   Trash2,
   X,
@@ -334,8 +333,8 @@ function ChatPanel({
           )}
           {messages.map((message, index) => (
             <div key={message.id} className={`message-row message-row--${message.role}`}>
-              {index === 0 && message.role === "assistant" && <span className="starter-label">Starter message</span>}
               <div className="message-bubble">{message.content}</div>
+              {index === 0 && message.role === "assistant" && <span className="starter-label">Starter message</span>}
             </div>
           ))}
           {sending && (
@@ -411,8 +410,10 @@ function SettingsModal({
       <button className="modal-backdrop" type="button" onClick={onClose} aria-label="Close settings" />
       <section className="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
         <header>
-          <div><span className="eyebrow">Companion settings</span><h2 id="settings-title">Make {profile.name} yours</h2></div>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Close settings"><X size={19} /></button>
+          <div className="edit-title">
+            <span className="edit-avatar"><PetAvatar profile={{ ...profile, ...pet }} mood="happy" compact /></span>
+            <h2 id="settings-title">Edit your pet</h2>
+          </div>
         </header>
         <form onSubmit={save}>
           <label className="name-field">
@@ -423,7 +424,53 @@ function SettingsModal({
             </span>
           </label>
           {error && <p className="field-error">{error}</p>}
-          <SelectionFields value={pet} onChange={setPet} compact />
+          <fieldset className="field-group edit-species">
+            <legend>Species</legend>
+            <div className="edit-species-grid">
+              {SPECIES_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={pet.species === option.value ? "edit-species-tile edit-species-tile--selected" : "edit-species-tile"}
+                  onClick={() => setPet({ ...pet, species: option.value })}
+                  aria-label={option.label}
+                  aria-pressed={pet.species === option.value}
+                  title={option.label}
+                >
+                  {option.emoji}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <fieldset className="field-group edit-colors">
+            <legend>Color</legend>
+            <div className="color-row">
+              {COLOR_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={`color-swatch ${pet.color === option.value ? "color-swatch--selected" : ""}`}
+                  style={{ "--swatch": option.value } as React.CSSProperties}
+                  aria-label={option.label}
+                  aria-pressed={pet.color === option.value}
+                  onClick={() => setPet({ ...pet, color: option.value })}
+                >
+                  {pet.color === option.value && <Check size={14} />}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <label className="edit-personality">
+            <span>Personality</span>
+            <select
+              value={pet.personality}
+              onChange={(event) => setPet({ ...pet, personality: event.target.value as Personality })}
+            >
+              {PERSONALITY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </label>
           <div className="settings-form-actions">
             <button className="secondary-button" type="button" onClick={onClose}>Cancel</button>
             <button className="primary-button" type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</button>
@@ -600,13 +647,9 @@ export function DeskpetApp() {
 
   return (
     <main className="pet-home">
-      <header className="topbar">
-        <a className="brand" href="#" aria-label="Deskpet home"><IconMark /><span>deskpet</span></a>
-        <div className="top-actions">
-          <button className="soft-button" type="button" onClick={() => setSettingsOpen(true)}><Settings size={16} /><span>Settings</span></button>
-          <ThemeButton theme={theme} onToggle={toggleTheme} />
-        </div>
-      </header>
+      <button className="floating-theme" type="button" onClick={toggleTheme} aria-label={`Use ${theme === "dark" ? "light" : "dark"} theme`}>
+        {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+      </button>
 
       <section className="companion-stage">
         <div className="ambient-orb ambient-orb--one" />
@@ -617,9 +660,7 @@ export function DeskpetApp() {
           <p>Click on {profile.name} any time you want to talk.</p>
         </div>
         <div className="corner-pet" style={{ "--pet-color": profile.color } as React.CSSProperties}>
-          <span className="corner-pet-status">here for you <i /></span>
           <PetAvatar profile={profile} mood={mood} interactive onClick={() => setChatOpen(true)} />
-          <strong>{profile.name}</strong>
         </div>
       </section>
 
