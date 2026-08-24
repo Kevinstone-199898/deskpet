@@ -113,9 +113,6 @@ export async function GET(request: Request): Promise<NextResponse> {
       { status: 400 },
     );
   }
-  if (!(await getProfile(parsed.data))) {
-    return NextResponse.json({ error: "Pet not found." }, { status: 404 });
-  }
   return NextResponse.json({ messages: await getChatMessages(parsed.data) });
 }
 

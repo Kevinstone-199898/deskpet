@@ -82,7 +82,7 @@ Updates one or more profile choices. Send `deviceId` plus any of `name`,
 
 ### `GET /api/chat?deviceId=<id>`
 
-Returns `{ "messages": ChatMessage[] }`. A profile must exist for the device.
+Returns `{ "messages": ChatMessage[] }`; an unknown device has an empty list.
 
 ### `POST /api/chat`
 
