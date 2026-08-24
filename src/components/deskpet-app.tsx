@@ -413,30 +413,33 @@ export function DeskpetApp() {
   );
 
   useEffect(() => {
-    const storedTheme = (localStorage.getItem(THEME_KEY) as Theme) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    setTheme(storedTheme);
-    document.documentElement.dataset.theme = storedTheme;
-    const localProfile = readJSON<PetProfile>(PROFILE_KEY);
-    const localMessages = readJSON<ChatMessage[]>(MESSAGES_KEY) ?? [];
-    if (localProfile) setProfile(localProfile);
-    setMessages(localMessages);
+    const initialization = window.setTimeout(() => {
+      const storedTheme = (localStorage.getItem(THEME_KEY) as Theme) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      setTheme(storedTheme);
+      document.documentElement.dataset.theme = storedTheme;
+      const localProfile = readJSON<PetProfile>(PROFILE_KEY);
+      const localMessages = readJSON<ChatMessage[]>(MESSAGES_KEY) ?? [];
+      if (localProfile) setProfile(localProfile);
+      setMessages(localMessages);
 
-    const deviceId = getDeviceId();
-    Promise.all([
-      fetch(`/api/pet?deviceId=${encodeURIComponent(deviceId)}`).then((response) => response.ok ? response.json() : null),
-      fetch(`/api/chat?deviceId=${encodeURIComponent(deviceId)}`).then((response) => response.ok ? response.json() : null),
-    ]).then(async ([petData, chatData]) => {
-      if (petData?.profile) {
-        setProfile(petData.profile);
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(petData.profile));
-      } else if (localProfile) {
-        fetch("/api/pet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(localProfile) }).catch(() => undefined);
-      }
-      if (chatData?.messages?.length) {
-        setMessages(chatData.messages);
-        localStorage.setItem(MESSAGES_KEY, JSON.stringify(chatData.messages));
-      }
-    }).catch(() => undefined).finally(() => setReady(true));
+      const deviceId = getDeviceId();
+      Promise.all([
+        fetch(`/api/pet?deviceId=${encodeURIComponent(deviceId)}`).then((response) => response.ok ? response.json() : null),
+        fetch(`/api/chat?deviceId=${encodeURIComponent(deviceId)}`).then((response) => response.ok ? response.json() : null),
+      ]).then(async ([petData, chatData]) => {
+        if (petData?.profile) {
+          setProfile(petData.profile);
+          localStorage.setItem(PROFILE_KEY, JSON.stringify(petData.profile));
+        } else if (localProfile) {
+          fetch("/api/pet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(localProfile) }).catch(() => undefined);
+        }
+        if (chatData?.messages?.length) {
+          setMessages(chatData.messages);
+          localStorage.setItem(MESSAGES_KEY, JSON.stringify(chatData.messages));
+        }
+      }).catch(() => undefined).finally(() => setReady(true));
+    }, 0);
+    return () => window.clearTimeout(initialization);
   }, []);
 
   function toggleTheme() {

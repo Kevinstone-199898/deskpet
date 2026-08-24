@@ -173,7 +173,31 @@ export function localPersonalityResponse(
       : `You're very welcome. I'm happy I could help.`;
   }
 
-  if (/\b(sad|upset|bad day|stressed|anxious|overwhelmed|tired)\b/.test(lower)) {
+  if (/\b(how (was|is) your day|how are you)\b/.test(lower)) {
+    const dayReplies: Record<Personality, string> = {
+      sunny: `Excellent now that you're here! I kept the desk cozy and celebrated a very impressive sunbeam.`,
+      sassy: `Productive. I supervised the entire desk and somehow nobody thanked me until now.`,
+      chill: `Quiet and pretty good. I found a comfortable spot and let the minutes wander by.`,
+      chaotic: `Incredible! I fought a dust bunny, named it Gerald, and now we're business partners.`,
+      gentle: `It was peaceful. I kept your spot warm and hoped you were being kind to yourself out there.`,
+    };
+    return dayReplies[profile.personality];
+  }
+
+  if (/\b(silly|joke|make me laugh|funny)\b/.test(lower)) {
+    const jokes = [
+      `Why did the ${speciesLabel(profile.species)} sit on the keyboard? It was keeping an eye on the mouse.`,
+      `I tried to organize the desk, but the paper clips formed a tiny union. Their demands are mostly snacks.`,
+      `Breaking news: a dust bunny has been promoted to Head of Under-Desk Operations.`,
+    ];
+    return deterministicChoice(seed, jokes);
+  }
+
+  if (/\b(encourag|motivat|pep talk|believe in me)\b/.test(lower)) {
+    return `Hey—you don't need to feel completely ready to begin. Pick one tiny next step, and I'll be right here being wildly impressed that you took it.`;
+  }
+
+  if (/\b(sad|upset|bad day|stress\w*|anxious|overwhelmed|tired)\b/.test(lower)) {
     const comfort: Record<Personality, string> = {
       sunny: `That sounds really hard. Let's make the next step tiny—one breath, one sip of water, and then we'll choose just one thing together.`,
       sassy: `That sounds rough, and I'm not going to put a glitter sticker over it. Let's make the next step unfairly small and take it together.`,
