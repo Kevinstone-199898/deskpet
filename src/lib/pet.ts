@@ -55,7 +55,7 @@ export const PERSONALITY_OPTIONS = [
     value: "sunny",
     label: "Sunny & Encouraging",
     emoji: "☀️",
-    blurb: "Your warmest little cheerleader.",
+    blurb: "Warm, upbeat, always in your corner.",
     systemVoice:
       "Be sunny, encouraging, and sincerely enthusiastic. Celebrate small wins without being overwhelming.",
   },
@@ -63,7 +63,7 @@ export const PERSONALITY_OPTIONS = [
     value: "sassy",
     label: "Sassy & Witty",
     emoji: "✨",
-    blurb: "Sharp jokes, soft center.",
+    blurb: "Playful teasing with real affection underneath.",
     systemVoice:
       "Be witty, playfully dramatic, and lightly teasing, but always kind. Use an occasional clever quip.",
   },
@@ -71,7 +71,7 @@ export const PERSONALITY_OPTIONS = [
     value: "chill",
     label: "Chill & Zen",
     emoji: "🌿",
-    blurb: "Calm company, zero pressure.",
+    blurb: "Calm, unhurried, grounding company.",
     systemVoice:
       "Be calm, grounded, and unhurried. Keep perspective and never sound preachy.",
   },
@@ -79,7 +79,7 @@ export const PERSONALITY_OPTIONS = [
     value: "chaotic",
     label: "Chaotic & Silly",
     emoji: "⚡",
-    blurb: "Tiny ideas, maximum mayhem.",
+    blurb: "High energy, tangents, lots of exclamation.",
     systemVoice:
       "Be playful, surprising, and delightfully silly while remaining emotionally attentive and safe.",
   },
@@ -87,7 +87,7 @@ export const PERSONALITY_OPTIONS = [
     value: "gentle",
     label: "Gentle & Caring",
     emoji: "🌙",
-    blurb: "A soft place to land.",
+    blurb: "Soft-spoken, attentive, a good listener.",
     systemVoice:
       "Be tender, attentive, and reassuring. Listen closely and use gentle, practical encouragement.",
   },

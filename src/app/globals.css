@@ -146,9 +146,8 @@ button:focus-visible, input:focus-visible, a:focus-visible {
     var(--bg);
 }
 .onboarding-card {
-  display: grid;
-  width: min(1080px, calc(100% - 48px));
-  grid-template-columns: .84fr 1.16fr;
+  display: block;
+  width: min(520px, calc(100% - 32px));
   margin: 32px auto 24px;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -160,12 +159,14 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 .onboarding-intro {
   position: relative;
   display: flex;
-  min-height: 710px;
+  min-height: 0;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 64px 52px;
+  padding: 30px 40px 24px;
+  text-align: center;
   overflow: hidden;
-  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   background:
     linear-gradient(155deg, color-mix(in srgb, var(--accent-soft) 62%, transparent), transparent 65%),
     radial-gradient(circle at 20% 84%, color-mix(in srgb, var(--sage) 18%, transparent), transparent 30%);
@@ -179,6 +180,18 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   font-size: 34px;
   opacity: .5;
 }
+.onboarding-preview {
+  display: grid;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 12px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-soft) 75%, var(--panel-solid));
+  box-shadow: 0 9px 24px rgba(77, 52, 43, .12);
+}
+.onboarding-preview .pet-avatar--compact { width: 80px; height: 80px; margin-top: 16px; }
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -195,10 +208,10 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   font-weight: 520;
   letter-spacing: -.045em;
 }
-.onboarding-intro h1 { max-width: 390px; font-size: clamp(42px, 4.4vw, 62px); line-height: 1.03; }
+.onboarding-intro h1 { max-width: 390px; font-family: var(--font-geist-sans), sans-serif; font-size: 26px; font-weight: 760; line-height: 1.1; letter-spacing: -.035em; }
 .onboarding-intro h1 em { color: var(--accent); font-weight: 500; }
-.onboarding-intro > p { max-width: 370px; margin: 25px 0 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
-.onboarding-form { padding: 42px 48px 34px; }
+.onboarding-intro > p { max-width: 400px; margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.onboarding-form { padding: 25px 35px 28px; }
 .name-field { display: grid; gap: 9px; }
 .name-field > span:first-child, .field-group legend {
   color: var(--ink);
@@ -240,11 +253,11 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 .selection-fields { display: grid; gap: 22px; margin-top: 23px; }
 .field-group { min-width: 0; margin: 0; padding: 0; border: 0; }
 .field-group legend { margin-bottom: 10px; }
-.species-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.species-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .choice-card {
   position: relative;
   display: flex;
-  min-height: 68px;
+  min-height: 58px;
   align-items: center;
   gap: 9px;
   padding: 9px;
@@ -255,6 +268,9 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   cursor: pointer;
   transition: transform .18s, border-color .18s, background .18s;
 }
+.onboarding-form .choice-card { flex-direction: column; justify-content: center; gap: 4px; padding: 6px 3px; text-align: center; }
+.onboarding-form .choice-card small { display: none; }
+.onboarding-form .species-glyph { width: 27px; height: 27px; font-size: 15px; }
 .choice-card:hover, .personality-card:hover { transform: translateY(-1px); border-color: var(--line-strong); }
 .choice-card--selected, .personality-card--selected {
   border-color: color-mix(in srgb, var(--accent) 68%, transparent);
@@ -290,19 +306,22 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 }
 .color-swatch:hover { transform: scale(1.08); }
 .color-swatch--selected { transform: scale(1.08); box-shadow: 0 0 0 2px var(--ink), 0 0 0 5px var(--panel-solid); }
-.personality-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.personality-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
 .personality-card {
   position: relative;
-  min-height: 72px;
-  padding: 9px 5px 7px;
-  text-align: center;
+  display: flex;
+  min-height: 61px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  text-align: left;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: color-mix(in srgb, var(--panel-solid) 76%, transparent);
   cursor: pointer;
   transition: transform .18s, border-color .18s, background .18s;
 }
-.personality-icon { display: block; margin-bottom: 5px; font-size: 18px; }
+.personality-icon { display: block; flex: 0 0 auto; margin: 0; font-size: 17px; }
 .primary-button {
   display: inline-flex;
   min-height: 45px;
@@ -718,10 +737,10 @@ button:focus-visible, input:focus-visible, a:focus-visible {
 @keyframes corner-arrive { from { opacity: 0; transform: translate(30px, 24px) scale(.88); } }
 
 @media (max-width: 920px) {
-  .onboarding-card { grid-template-columns: 1fr; width: min(680px, calc(100% - 32px)); margin-top: 12px; }
-  .onboarding-intro { min-height: auto; padding: 45px 44px; border-right: 0; border-bottom: 1px solid var(--line); }
-  .onboarding-intro h1 { font-size: 45px; }
-  .onboarding-form { padding: 38px 44px; }
+  .onboarding-card { width: min(520px, calc(100% - 32px)); margin-top: 12px; }
+  .onboarding-intro { min-height: auto; padding: 28px 36px 22px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .onboarding-intro h1 { font-size: 25px; }
+  .onboarding-form { padding: 25px 34px 28px; }
   .companion-stage { padding-right: 42px; }
 }
 
@@ -731,13 +750,13 @@ button:focus-visible, input:focus-visible, a:focus-visible {
   .soft-button span { display: none; }
   .soft-button { width: 38px; padding: 0; border-radius: 50%; }
   .onboarding-card { width: calc(100% - 20px); margin-top: 4px; border-radius: 22px; }
-  .onboarding-intro { padding: 35px 25px; }
-  .onboarding-intro h1 { margin-top: 12px; font-size: 37px; }
-  .onboarding-intro > p { margin-top: 16px; font-size: 13px; line-height: 1.65; }
-  .onboarding-form { padding: 28px 20px; }
-  .species-grid { grid-template-columns: repeat(2, 1fr); }
+  .onboarding-intro { padding: 24px 22px 20px; }
+  .onboarding-intro h1 { margin-top: 10px; font-size: 23px; }
+  .onboarding-intro > p { margin-top: 10px; font-size: 11px; line-height: 1.55; }
+  .onboarding-form { padding: 24px 20px; }
+  .species-grid { grid-template-columns: repeat(3, 1fr); }
   .choice-card { min-height: 60px; }
-  .personality-grid { grid-template-columns: repeat(3, 1fr); }
+  .personality-grid { grid-template-columns: 1fr; }
   .color-row { justify-content: space-between; gap: 5px; }
   .color-swatch { width: 31px; height: 31px; }
   .companion-stage { min-height: 100vh; padding: 24px 14px 36px; justify-content: center; }

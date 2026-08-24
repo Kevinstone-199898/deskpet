@@ -185,7 +185,7 @@ function Onboarding({
     event.preventDefault();
     const validation = validateName(pet.name);
     if (validation !== true) {
-      setError(typeof validation === "string" ? validation : "Give your pet a name first.");
+      setError(pet.name.trim() ? String(validation) : "Give your pet a name.");
       return;
     }
     setSaving(true);
@@ -211,6 +211,14 @@ function Onboarding({
     }
   }
 
+  const previewProfile = {
+    ...pet,
+    deviceId: "preview",
+    mood: "happy",
+    createdAt: "",
+    updatedAt: "",
+  } as PetProfile;
+
   return (
     <main className="onboarding-shell">
       <header className="topbar topbar--onboarding">
@@ -222,8 +230,9 @@ function Onboarding({
       </header>
       <section className="onboarding-card" aria-labelledby="onboarding-title">
         <div className="onboarding-intro">
+          <span className="onboarding-preview"><PetAvatar profile={previewProfile} mood="happy" compact /></span>
           <span className="eyebrow"><Feather size={13} /> Your tiny sidekick</span>
-          <h1 id="onboarding-title">Meet your new<br /><em>companion.</em></h1>
+          <h1 id="onboarding-title">Meet your new companion</h1>
           <p>Give it a name, a look, and a personality. It will remember this and everything you tell it, every time you come back.</p>
         </div>
         <form className="onboarding-form" onSubmit={submit}>
@@ -234,7 +243,7 @@ function Onboarding({
                 autoFocus
                 maxLength={24}
                 value={pet.name}
-                placeholder="Something adorable..."
+                placeholder="e.g. Miso"
                 onChange={(event) => {
                   setPet({ ...pet, name: event.target.value });
                   setError("");
