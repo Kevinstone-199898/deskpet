@@ -31,7 +31,7 @@ const postSchema = z
     deviceId: body.deviceId,
     message: (body.message ?? body.userMessage ?? "").trim(),
   }))
-  .refine(({ message }) => message.length > 0 && message.length <= 1_000);
+  .refine(({ message }) => message.length > 0 && message.length <= 2_000);
 
 const MODEL_ID = "gpt-5.6-luna";
 const GATEWAY_MODEL_ID = `openai/${MODEL_ID}` as const;
@@ -134,7 +134,7 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = postSchema.safeParse(await jsonBody(request));
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "A deviceId and message of at most 1000 characters are required." },
+      { error: "A deviceId and message of at most 2000 characters are required." },
       { status: 400 },
     );
   }

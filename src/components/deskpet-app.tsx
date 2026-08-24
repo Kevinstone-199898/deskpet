@@ -1,11 +1,9 @@
 "use client";
 
 import {
-  ArrowLeft,
   Check,
   Download,
   Feather,
-  MessageCircle,
   Moon,
   RotateCcw,
   Send,
@@ -14,7 +12,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import {
   COLOR_OPTIONS,
   localPersonalityResponse,
@@ -38,6 +36,7 @@ const STARTERS = [
   "Tell me something silly",
   "I need a little encouragement",
 ];
+const QUICK_NAMES = ["Miso", "Pixel", "Ember", "Noodle", "Biscuit", "Comet"];
 
 type Theme = "light" | "dark";
 type EditablePet = Pick<PetProfile, "name" | "species" | "color" | "personality">;
@@ -225,7 +224,7 @@ function Onboarding({
       <section className="onboarding-card" aria-labelledby="onboarding-title">
         <div className="onboarding-intro">
           <span className="eyebrow"><Feather size={13} /> Your tiny sidekick</span>
-          <h1 id="onboarding-title">Meet your new<br /><em>desk companion.</em></h1>
+          <h1 id="onboarding-title">Meet your new<br /><em>companion.</em></h1>
           <p>Give it a name, a look, and a personality. It will remember this and everything you tell it, every time you come back.</p>
         </div>
         <form className="onboarding-form" onSubmit={submit}>
@@ -246,10 +245,25 @@ function Onboarding({
               <small>{pet.name.length}/24</small>
             </span>
           </label>
+          <div className="name-picks" aria-label="Quick name ideas">
+            {QUICK_NAMES.map((name) => (
+              <button
+                key={name}
+                type="button"
+                className={pet.name === name ? "name-pick name-pick--selected" : "name-pick"}
+                onClick={() => {
+                  setPet({ ...pet, name });
+                  setError("");
+                }}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
           {error && <p className="field-error" id="name-error">{error}</p>}
           <SelectionFields value={pet} onChange={setPet} />
           <button className="primary-button primary-button--large" disabled={saving} type="submit">
-            {saving ? "Waking up..." : "Bring my pet to life"}
+            {saving ? "Bringing your pet to life…" : "Bring my pet to life"}
             {!saving && <span aria-hidden="true">→</span>}
           </button>
           <p className="privacy-note">No account needed · Your companion stays yours</p>
@@ -266,6 +280,7 @@ function ChatPanel({
   open,
   sending,
   onClose,
+  onSettings,
   onSend,
 }: {
   profile: PetProfile;
@@ -273,17 +288,22 @@ function ChatPanel({
   open: boolean;
   sending: boolean;
   onClose: () => void;
+  onSettings: () => void;
   onSend: (message: string) => void;
 }) {
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   useEffect(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), [messages, sending, open]);
 
-  function submit(event: FormEvent) {
-    event.preventDefault();
+  function sendDraft() {
     if (!draft.trim() || sending) return;
     onSend(draft.trim());
     setDraft("");
+  }
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    sendDraft();
   }
 
   return (
@@ -296,9 +316,12 @@ function ChatPanel({
           </div>
           <div>
             <strong>{profile.name}</strong>
-            <span><i /> here with you</span>
+            <span><i /> {sending ? "typing…" : "here for you"}</span>
           </div>
-          <button className="icon-button chat-close" type="button" onClick={onClose} aria-label="Close chat"><X size={18} /></button>
+          <div className="chat-header-actions">
+            <button className="icon-button" type="button" onClick={onSettings} aria-label={`Edit ${profile.name}`} title="Companion settings"><Sun size={17} /></button>
+            <button className="icon-button" type="button" onClick={onClose} aria-label="Close chat"><X size={18} /></button>
+          </div>
         </header>
         <div className="chat-scroll" aria-live="polite">
           <div className="chat-date">Today</div>
@@ -309,8 +332,9 @@ function ChatPanel({
               <small>Start with anything on your mind.</small>
             </div>
           )}
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <div key={message.id} className={`message-row message-row--${message.role}`}>
+              {index === 0 && message.role === "assistant" && <span className="starter-label">Starter message</span>}
               <div className="message-bubble">{message.content}</div>
             </div>
           ))}
@@ -326,10 +350,26 @@ function ChatPanel({
             {STARTERS.map((starter) => <button type="button" key={starter} onClick={() => onSend(starter)}>{starter}</button>)}
           </div>
         )}
-        <form className="chat-compose" onSubmit={submit}>
-          <input value={draft} onChange={(event) => setDraft(event.target.value)} maxLength={500} placeholder={`Talk to ${profile.name}...`} aria-label={`Message ${profile.name}`} />
-          <button type="submit" disabled={!draft.trim() || sending} aria-label="Send message"><Send size={17} /></button>
-        </form>
+        <div className="chat-composer-wrap">
+          <form className="chat-compose" onSubmit={submit}>
+            <textarea
+              rows={1}
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  sendDraft();
+                }
+              }}
+              maxLength={2000}
+              placeholder={`Message ${profile.name}…`}
+              aria-label={`Message ${profile.name}`}
+            />
+            <button type="submit" disabled={!draft.trim() || sending} aria-label="Send message"><Send size={17} /></button>
+          </form>
+          <div className="composer-meta"><span>Enter to send · Shift+Enter for a new line</span><span>{draft.length}/2000</span></div>
+        </div>
         <p className="chat-footnote">Your conversations are remembered on this device.</p>
       </aside>
     </>
@@ -384,7 +424,10 @@ function SettingsModal({
           </label>
           {error && <p className="field-error">{error}</p>}
           <SelectionFields value={pet} onChange={setPet} compact />
-          <button className="primary-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button>
+          <div className="settings-form-actions">
+            <button className="secondary-button" type="button" onClick={onClose}>Cancel</button>
+            <button className="primary-button" type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</button>
+          </div>
         </form>
         <div className="settings-tools">
           <h3>Conversation</h3>
@@ -406,11 +449,6 @@ export function DeskpetApp() {
   const [mood, setMood] = useState<Mood>("happy");
   const [theme, setTheme] = useState<Theme>("light");
   const [toast, setToast] = useState("");
-
-  const lastAssistant = useMemo(
-    () => [...messages].reverse().find((message) => message.role === "assistant"),
-    [messages],
-  );
 
   useEffect(() => {
     const initialization = window.setTimeout(() => {
@@ -573,28 +611,30 @@ export function DeskpetApp() {
       <section className="companion-stage">
         <div className="ambient-orb ambient-orb--one" />
         <div className="ambient-orb ambient-orb--two" />
-        <div className="return-copy">
-          <span className="eyebrow">Your desk companion</span>
-          <h1>Hey, you’re back.</h1>
-          <p>{lastAssistant?.content ?? `${profile.name} has been keeping your spot warm.`}</p>
+        <div className="corner-hint">
+          <span className="hint-sparkle" aria-hidden="true">✦</span>
+          <h1>{profile.name} is here, in the corner.</h1>
+          <p>Click on {profile.name} any time you want to talk.</p>
         </div>
-        <div className="desk-scene">
-          <div className="speech-nudge">I was hoping you’d stop by <span>♥</span></div>
+        <div className="corner-pet" style={{ "--pet-color": profile.color } as React.CSSProperties}>
+          <span className="corner-pet-status">here for you <i /></span>
           <PetAvatar profile={profile} mood={mood} interactive onClick={() => setChatOpen(true)} />
-          <div className="desk-line" />
-          <div className="plant" aria-hidden="true"><i /><i /><i /><span /></div>
-          <div className="mug" aria-hidden="true"><i /><span /></div>
-        </div>
-        <button className="talk-button" type="button" onClick={() => setChatOpen(true)}>
-          <MessageCircle size={18} /> Talk to {profile.name}
-        </button>
-        <div className="companion-meta">
-          <span>{profile.species}</span><i /> <span>{PERSONALITY_OPTIONS.find((option) => option.value === profile.personality)?.label}</span>
+          <strong>{profile.name}</strong>
         </div>
       </section>
 
-      <button className="mobile-back" type="button" onClick={() => history.back()} aria-label="Go back"><ArrowLeft size={18} /></button>
-      <ChatPanel profile={profile} messages={messages} open={chatOpen} sending={sending} onClose={() => setChatOpen(false)} onSend={sendMessage} />
+      <ChatPanel
+        profile={profile}
+        messages={messages}
+        open={chatOpen}
+        sending={sending}
+        onClose={() => setChatOpen(false)}
+        onSettings={() => {
+          setChatOpen(false);
+          setSettingsOpen(true);
+        }}
+        onSend={sendMessage}
+      />
       {settingsOpen && <SettingsModal profile={profile} onClose={() => setSettingsOpen(false)} onSave={saveProfile} onForget={forgetConversation} onExport={exportTranscript} />}
       {toast && <div className="toast" role="status"><RotateCcw size={15} />{toast}</div>}
     </main>
